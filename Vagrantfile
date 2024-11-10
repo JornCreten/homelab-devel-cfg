@@ -12,5 +12,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "2048"
     vb.cpus = 2
+    # External shell script provisioning
+  config.vm.provision "shell", path: "./scripts/main.sh"
   end
 end
