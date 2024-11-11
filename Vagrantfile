@@ -27,7 +27,7 @@ Vagrant.configure("2") do |config|
         # Provision the master node to install Kubernetes and generate the token
         node.vm.provision "shell", inline: <<-SHELL
           curl -sfL https://get.k3s.io | sh -
-          sudo cat /var/lib/rancher/k3s/server/node-token > /vagrant_shared/kube_join_command.sh
+          sudo cat /var/lib/rancher/k3s/server/node-token > /vagrant_shared/kube_join_token
         SHELL
       end
       if machine['role'] == "worker"
@@ -41,9 +41,10 @@ Vagrant.configure("2") do |config|
         end
         # Provision the worker node to join the Kubernetes cluster
         node.vm.provision "shell", inline: <<-SHELL
+          KUBE_JOIN_TOKEN=$(cat "/vagrant_shared/kube_join_token")
           # Execute the join command retrieved from the master node
-          export
-           curl -sfL https://get.k3s.io | K3S_URL=https://192.168.56.10:6443 K3S_TOKEN_FILE= "/vagrant_shared/kube_join_command.sh" sh -
+          echo $KUBE_JOIN_TOKEN
+          curl -sfL https://get.k3s.io | K3S_URL=https://192.168.56.110:6443 K3S_TOKEN=$KUBE_JOIN_TOKEN sh -
         SHELL
       # Dynamically load and run role-specific scripts
       role = machine['role']
