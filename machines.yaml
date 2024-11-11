@@ -1,0 +1,19 @@
+# machines.yml
+machines:
+  - name: "master"
+    role: "master"
+    memory: 2048
+    cpus: 2
+    ip: "192.168.56.10"
+
+  - name: "worker1"
+    role: "worker"
+    memory: 1024
+    cpus: 1
+    ip: "192.168.56.11"
+
+  - name: "worker2"
+    role: "worker"
+    memory: 1024
+    cpus: 1
+    ip: "192.168.56.12"
