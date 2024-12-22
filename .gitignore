@@ -1,2 +1,7 @@
 # ignore vagrant folder
 .vagrant/*
+
+ignore shared folders
+.shared/*
+*/Chart.lock
+helm/charts/*
