@@ -3,3 +3,5 @@
 
 ignore shared folders
 .shared/*
+*/Chart.lock
+helm/charts/*

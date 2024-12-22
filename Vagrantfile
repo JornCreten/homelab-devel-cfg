@@ -9,6 +9,7 @@ Vagrant.configure("2") do |config|
     config.vm.define machine['name'] do |node|
       node.vm.box = "generic/fedora39"
       node.vm.hostname = machine['name']
+      node.vm.network "private_network", ip: machine['ip']
       
 
 
@@ -16,7 +17,7 @@ Vagrant.configure("2") do |config|
       config.ssh.password = "vagrant"  # Replace with the correct password
       config.ssh.insert_key = true          # Prevents Vagrant from trying to replace the key
       
-      node.vm.network "private_network", ip: machine['ip']
+
 
       # Resource allocation
       node.vm.provider "virtualbox" do |vb|
@@ -28,6 +29,7 @@ Vagrant.configure("2") do |config|
         node.vm.provision "shell", inline: <<-SHELL
           curl -sfL https://get.k3s.io | sh -
           sudo cat /var/lib/rancher/k3s/server/node-token > /vagrant_shared/kube_join_token
+          hostname -I | awk '{print $2}' > /vagrant_shared/kube_master_ip
         SHELL
       end
       if machine['role'] == "worker"
@@ -42,9 +44,10 @@ Vagrant.configure("2") do |config|
         # Provision the worker node to join the Kubernetes cluster
         node.vm.provision "shell", inline: <<-SHELL
           KUBE_JOIN_TOKEN=$(cat "/vagrant_shared/kube_join_token")
+          MASTER_IP=$(cat "/vagrant_shared/kube_master_ip")
           # Execute the join command retrieved from the master node
           echo $KUBE_JOIN_TOKEN
-          curl -sfL https://get.k3s.io | K3S_URL=https://192.168.56.110:6443 K3S_TOKEN=$KUBE_JOIN_TOKEN sh -
+          curl -sfL https://get.k3s.io | K3S_URL=https://$MASTER_IP:6443 K3S_TOKEN=$KUBE_JOIN_TOKEN sh -
         SHELL
       # Dynamically load and run role-specific scripts
       role = machine['role']
