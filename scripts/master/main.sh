@@ -7,3 +7,5 @@ firewall-cmd --reload
 
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 helm repo add stable https://charts.helm.sh/stable
+
+helm update argocd /helm/ --install --namespace argocd --create-namespace --values /helm/values.yaml

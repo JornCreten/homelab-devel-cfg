@@ -6,6 +6,7 @@ machines = YAML.load_file('machines.yaml')['machines']
 Vagrant.configure("2") do |config|
   machines.each do |machine|
     config.vm.synced_folder ".shared", "/vagrant_shared", owner: "vagrant"
+    config.vm.synced_folder "helm", "/helm", owner: "vagrant"
     config.vm.define machine['name'] do |node|
       node.vm.box = "generic/fedora39"
       node.vm.hostname = machine['name']
@@ -46,7 +47,6 @@ Vagrant.configure("2") do |config|
           KUBE_JOIN_TOKEN=$(cat "/vagrant_shared/kube_join_token")
           MASTER_IP=$(cat "/vagrant_shared/kube_master_ip")
           # Execute the join command retrieved from the master node
-          echo $KUBE_JOIN_TOKEN
           curl -sfL https://get.k3s.io | K3S_URL=https://$MASTER_IP:6443 K3S_TOKEN=$KUBE_JOIN_TOKEN sh -
         SHELL
       # Dynamically load and run role-specific scripts
